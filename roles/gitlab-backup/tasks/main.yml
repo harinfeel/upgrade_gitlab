@@ -1,0 +1,48 @@
+---
+- name: Install Docker SDK for Python
+  pip:
+    name: 
+      - "docker"
+      - "docker-compose"
+
+- name: Install docker-compose.yml 
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+    owner: "ec2-user"
+    group: "ec2-user"
+  with_items:
+    - { src: "docker-compose.yml.j2", dest: "{{ def_dir }}/docker-compose.yml", mode: "0644" }
+
+#- name: docker pull gitlab
+#  docker_image:
+#    name: gitlab/gitlab-ee:latest
+#    source: pull
+#
+#- name: Install Gitlab
+#  docker_compose:
+#    project_src: "{{ default_dir }}"
+#    state: absent
+
+#- name: docker pull gitlab
+#  docker_compose:
+#    project_src: "{{ default_dir }}"
+    
+- name: Install Gitlab
+  docker_compose:
+    project_src: "{{ default_dir }}"
+    stopped: yes
+    build: no
+    pull: yes
+    state: present    
+  register: gitlab_output
+
+- name: Remove Gitlab
+  docker_compose:
+    project_src: "{{ default_dir }}"
+    state: absent
+    remove_volumes: yes
+  register: absent_output
+    
+

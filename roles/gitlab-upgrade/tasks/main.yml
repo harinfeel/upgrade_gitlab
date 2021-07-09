@@ -1,0 +1,37 @@
+---
+- name: Check exists docker
+  shell: |
+    export chkDocker=$(rpm -qa | grep docker)
+    echo $chkDocker
+  register: chkDocker
+  changed_when: false
+
+- name: Install docker
+  shell: amazon-linux-extras install -y docker
+  register: instDocker
+  when: chkDocker.stdout | length == 0
+
+- name: Replcate Docker default directory
+  replace:
+    path: /usr/lib/systemd/system/docker.service
+    regexp: '^ExecStart=\/usr\/bin\/dockerd -H'
+    replace: 'ExecStart=/usr/bin/dockerd -g /mnt/docker -H'
+
+- name: Setting systemctl
+  systemd:
+    name: docker
+    state: started
+    daemon_reload: yes
+    enabled: yes
+
+- name: Install docker-compose
+  get_url:
+    url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
+    dest: /usr/local/bin/docker-compose
+  
+- name: Change mod
+  file:
+    path: /usr/local/bin/docker-compose
+    state: file
+    mode: "0755"
+

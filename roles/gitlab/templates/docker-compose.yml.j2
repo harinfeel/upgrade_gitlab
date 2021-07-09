@@ -1,0 +1,36 @@
+web:
+  image: "gitlab/gitlab-ee:latest"
+  restart: always
+  environment:
+    GITLAB_OMNIBUS_CONFIG: |
+      external_url "https://gitlab.chaiz.net"
+      gitlab_rails['lfs_enabled'] = true
+      gitlab_rails['object_store']['enabled'] = true
+      gitlab_rails['object_store']['proxy_download'] = true
+      gitlab_rails['object_store']['connection'] = {'provider' => 'AWS', 'region' => 'ap-northeast-2', 'use_iam_profile' => true }
+      gitlab_rails['object_store']['objects']['artifacts']['bucket'] = 'chai-mgmt-artifacts'
+      gitlab_rails['object_store']['objects']['external_diffs']['bucket'] = 'chai-mgmt-external-diffs'
+      gitlab_rails['object_store']['objects']['lfs']['bucket'] = 'chai-mgmt-lfs'
+      gitlab_rails['object_store']['objects']['uploads']['bucket'] = 'chai-mgmt-uploads'
+      gitlab_rails['object_store']['objects']['packages']['bucket'] = 'chai-mgmt-packages'
+      gitlab_rails['object_store']['objects']['dependency_proxy']['bucket'] = 'chai-mgmt-dependency-proxy'
+      gitlab_rails['object_store']['objects']['terraform_state']['bucket'] = 'chai-mgmt-terraform-state'
+      gitlab_rails['backup_upload_connection'] = {'provider' => 'AWS', 'region' => 'ap-northeast-2', 'use_iam_profile' => true }
+      gitlab_rails['backup_upload_remote_directory'] = 'chai-mgmt-backups'
+      gitlab_rails['time_zone'] = 'Asia/Seoul'
+      # Set Nginx
+      nginx['client_max_body_size'] = '1024m'
+      nginx['redirect_http_to_https'] = false
+      nginx['gzip_enabled'] = false
+      nginx['listen_port'] = 80
+      nginx['listen_https'] = false
+      nginx['proxy_set_headers'] = { "X-Forwarded-Proto" => "https", "X-Forwarded-Ssl" => "on" }
+      # Letsencrypt SSL false
+      letsencrypt['enable'] = false
+  ports:
+    - "2222:22"
+    - "80:80"
+  volumes:
+    - '/mnt/gitlab/config:/etc/gitlab'
+    - '/mnt/gitlab/logs:/var/log/gitlab'
+    - '/mnt/gitlab/data:/var/opt/gitlab'

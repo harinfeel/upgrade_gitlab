@@ -1,0 +1,25 @@
+---
+#- name: Install Docker SDK for Python
+#  pip:
+#    name: "docker<5" 
+
+- name: Install docker-compose.yml 
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+    owner: "ec2-user"
+    group: "ec2-user"
+  with_items:
+    - { src: "docker-compose.yml.j2", dest: "{{ def_dir }}/docker-compose.yml", mode: "0644" }
+
+- name: docker pull gitlab
+  shell: |
+    docker pull gitlab/gitlab-ee:latest
+  changed_when: false
+
+- name: Start gitlab
+  shell: |
+    /usr/local/bin/docker-compose up -d
+  changed_when: false
+  

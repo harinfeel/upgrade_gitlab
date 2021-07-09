@@ -1,0 +1,40 @@
+---
+- name: Update packages
+  yum:
+    name: '*'
+    state: latest
+
+- name: Count volumes
+  shell: |
+    export chkCntVol=$(lsblk -x SIZE | grep disk | egrep -v 'nvme0n1|xvda' | wc -l)
+    echo $chkCntVol
+  register: chkCntVol
+  changed_when: false
+
+- name: Check volume name
+  shell: |
+    lsblk -x SIZE | grep disk | egrep -v 'nvme0n1|xvda' | awk '{print $1}'
+  register: chkVolName
+  when: chkCntVol.stdout|int >= 1
+  changed_when: false
+    
+- set_fact:
+    volName: "{{ chkVolName.stdout_lines }}"
+
+- name: Set filesystem
+  filesystem:
+    fstype: ext4
+    dev: /dev/{{ item }}
+  with_items:
+    - "{{ volName }}"
+
+### EBS 볼륨이 다수일 경우 새로운 배열을 할당해서 마운트 디렉토리도 추가해서 넣어야 합니다.
+- name: Mount disk /mnt
+  mount:
+    path: /mnt
+    src: "/dev/{{ item }}"
+    fstype: ext4
+    state: mounted
+    passno: "2"
+  with_items:
+    - "{{ volName }}"

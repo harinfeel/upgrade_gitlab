@@ -1,0 +1,13 @@
+---
+- name: Install Docker, Gitlab Packages
+  hosts: all
+  become: true
+  become_method: sudo
+  become_user: root  
+  gather_facts: false
+  roles:
+    - { role: volume, tags: [ 'all', 'volume' ] }
+    - { role: docker, tags: [ 'all', 'docker' ] }
+    - { role: gitlab, tags: [ 'all', 'gitlab' ] }
+    - { role: gitlab-backup, tags: [ 'all', 'gitlab-backup' ] }
+    - { role: gitlab-upgrade, tags: [ 'all', 'gitlab-upgrade' ] }

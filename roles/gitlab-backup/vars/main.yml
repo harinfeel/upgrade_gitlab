@@ -1,0 +1,52 @@
+---
+default_dir: "/home/ec2-user"
+provider: "AWS"
+region: "ap-northeast-2"
+use_iam_profile: true
+
+gitlab_url: "gitlab.mzcloud.xyz"
+external_url: "https://gitlab.mzcloud.xyz"
+registry_external_url: "https://registry.mzcloud.xyz"
+lfs_enabled: true
+
+object_store:
+  enable: true
+  connection:
+    proxy_download: true    
+  bucket:
+    artifact: "gl-mzc-artifacts"
+    external_diffs: "gl-mzc-external-diffs"
+    lfs: "gl-mzc-lfs"
+    uploads: "gl-mzc-uploads"
+    packages: "gl-mzc-packages"
+    dependency_proxy: "gl-mzc-dependency-proxy"
+    terraform_state: "gl-mzc-terraform-state"
+
+backup_upload_remote_directory: "gl-mzc-backups"
+time_zone: "Asia/Seoul"
+
+registry:
+  enable: true
+  nginx_listen_port: 80
+  nginx_listen_https: false
+  bucket: "gl-mzc-registry"
+
+nginx:
+  client_max_body_size: "1024m"
+  redirect_http_to_https: false
+  gzip_enabled: false
+  listen_port: 80
+  listen_https: false
+
+letsencrypt: false
+
+ports:
+  ssh: "2222:22"
+  http: "80:80"
+  https: "443:443"
+  registry: "5000:5000"
+
+volumes:
+  config: "/mnt/gitlab/config:/etc/gitlab"
+  logs: "/mnt/gitlab/logs:/var/log/gitlab"
+  data: "/mnt/gitlab/data:/var/opt/gitlab"
