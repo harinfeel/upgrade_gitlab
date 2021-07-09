@@ -9,16 +9,4 @@
   with_items:
     - { src: "docker-compose.yml.j2", dest: "{{ def_dir }}/docker-compose.yml", mode: "0644" }
 
-- name: Install Gitlab
-  docker_compose:
-    project_src: "{{ default_dir }}"
-    pull: yes
-    state: present
-  register: gitlab_output
 
-#- name: Remove Gitlab
-#  docker_compose:
-#    project_src: "{{ default_dir }}"
-#    state: absent
-#    remove_volumes: yes
-#  register: absent_output

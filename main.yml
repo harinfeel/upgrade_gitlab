@@ -9,5 +9,5 @@
     - { role: volume, tags: [ 'all', 'volume' ] }
     - { role: docker, tags: [ 'all', 'docker' ] }
     - { role: gitlab, tags: [ 'all', 'gitlab' ] }
-    - { role: gitlab-backup, tags: [ 'all', 'gitlab-backup' ] }
-    - { role: gitlab-upgrade, tags: [ 'all', 'gitlab-upgrade' ] }
+    - { role: backup, tags: [ 'all', 'backup' ] }
+    - { role: upgrade, tags: [ 'all', 'upgrade' ] }

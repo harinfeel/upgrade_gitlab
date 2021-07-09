@@ -1,3 +1,8 @@
-# upgrade-gitlab
+# Gitlab Upgrade 자동화
 
-df
+Ansible을 사용하여 자동 백업, 업그레이드를 진행합니다.
+사전에 문제가 될 부분이 있는지 Gitlab에서 제공하는 릴리즈 노트를 확인하고 업그레이드를 진행하도록 합니다.
+
+
+
+
