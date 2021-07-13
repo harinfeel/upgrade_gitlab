@@ -1,0 +1,8 @@
+---
+- name: Remove Gitlab
+  docker_compose:
+    project_name: gitlab
+    project_src: "{{ default_dir }}"
+    state: absent
+    remove_volumes: yes
+  register: absent_output

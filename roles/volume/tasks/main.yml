@@ -1,9 +1,4 @@
 ---
-- name: Update packages
-  yum:
-    name: '*'
-    state: latest
-
 - name: Count volumes
   shell: |
     export chkCntVol=$(lsblk -x SIZE | grep disk | egrep -v 'nvme0n1|xvda' | wc -l)
@@ -11,15 +6,26 @@
   register: chkCntVol
   changed_when: false
 
+- name: Created Volume Directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+  with_items:
+    - "{{ mntPath }}"
+  when: chkCntVol.stdout|int >= 2
+
 - name: Check volume name
   shell: |
     lsblk -x SIZE | grep disk | egrep -v 'nvme0n1|xvda' | awk '{print $1}'
   register: chkVolName
   when: chkCntVol.stdout|int >= 1
   changed_when: false
-    
-- set_fact:
-    volName: "{{ chkVolName.stdout_lines }}"
+
+- name: Set volume name
+  set_fact:
+    volName: "{{ chkVolName.stdout_lines }}"  # chkCntVol 배열로 입력
 
 - name: Set filesystem
   filesystem:
@@ -28,13 +34,57 @@
   with_items:
     - "{{ volName }}"
 
-### EBS 볼륨이 다수일 경우 새로운 배열을 할당해서 마운트 디렉토리도 추가해서 넣어야 합니다.
-- name: Mount disk /mnt
+- name: Check volume UUID
+  shell: |
+    blkid | grep {{ item }} | awk -F\" '{print $2}'
+  register: chkUuid
+  with_items:  
+    - "{{ volName }}"
+  when: chkVolName.stdout | length >= 0
+  changed_when: false
+
+#- debug:
+#    msg: "{{ item.stdout }}"
+#  with_items:
+#    - "{{ chkUuid.results }}"
+
+- name: Set UUID
+  set_fact:
+    volUuid: "{{ item.stdout }}"  # chkCntVol 배열로 입력
+  with_items:
+    - "{{ chkUuid.results }}"
+
+- name: Set Mountpath
+  set_fact:
+    setMntPath: "{{ item }}"
+  with_items:
+    - "{{ mntPath }}"
+  when: 
+    when: chkCntVol.stdout|int >= 2
+
+#- debug:
+#    msg: "Mountpath: {{ setMntPath }}\nvolUuid: {{ volUuid }}"
+#  with_items:
+#    - "{{ chkUuid.results }}"
+
+- name: Mount multiple disk 
   mount:
-    path: /mnt
-    src: "/dev/{{ item }}"
+    path: "{{ item.path }}"
+    src: "UUID={{ item.src }}"
     fstype: ext4
     state: mounted
     passno: "2"
   with_items:
-    - "{{ volName }}"
+    - { path: "{{ setMntPath }}", src: "{{ volUuid }}" }
+  when: chkCntVol.stdout|int >= 2
+
+- name: Mount disk /mnt
+  mount:
+    path: "/mnt"
+    src: "UUID={{ item }}"
+    fstype: ext4
+    state: mounted
+    passno: "2"
+  with_items:
+    - "{{ volUuid }}"
+  when: chkCntVol.stdout|int == 1

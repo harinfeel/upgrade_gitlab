@@ -1,15 +1,9 @@
 ---
-- name: Backup Gitlab data
-  docker_container:
+- name: Install Gitlab
+  docker_compose:
     project_name: gitlab
     project_src: "{{ default_dir }}"
     pull: yes
     state: present
-  register: gitlab_output
-
-#- name: Remove Gitlab
-#  docker_compose:
-#    project_src: "{{ default_dir }}"
-#    state: absent
-#    remove_volumes: yes
-#  register: absent_output
+    recreate: always
+  register: upgradeGitlab

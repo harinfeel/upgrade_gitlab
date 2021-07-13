@@ -1,0 +1,58 @@
+---
+mntPath:
+  - "/mnt"
+  - "/mnt/disk2"
+
+container_name: gitlab_gitlab_1 # Container Name
+default_dir: "/home/ec2-user"   # Default path
+provider: "AWS"                 # Storage provider
+region: "ap-northeast-2"        # Region
+use_iam_profile: true           # Using AWS IAM Profile
+
+gitlab_url: "gitlab.mzcloud.xyz"                          # Gitlab URL
+registry_external_url: "http:s//registry.honeyharin.com"  # Gitlab Registry URL
+
+lfs_enabled: true # Enable LFS(Large File System)
+
+# Setting object storage
+object_store:
+  enable: true
+  connection:
+    proxy_download: true
+  bucket:
+    artifact: "gl-mzc-artifacts"
+    external_diffs: "gl-mzc-external-diffs"
+    lfs: "gl-mzc-lfs"
+    uploads: "gl-mzc-uploads"
+    packages: "gl-mzc-packages"
+    dependency_proxy: "gl-mzc-dependency-proxy"
+    terraform_state: "gl-mzc-terraform-state"
+
+backup_upload_remote_directory: "gl-mzc-backups"
+time_zone: "Asia/Seoul"
+
+registry:
+  enable: true
+  nginx_listen_port: 80
+  nginx_listen_https: false
+  bucket: "gl-mzc-registry"
+
+nginx:
+  client_max_body_size: "1024m"
+  redirect_http_to_https: false
+  gzip_enabled: false
+  listen_port: 80
+  listen_https: false
+
+letsencrypt: false
+
+ports:
+  ssh: "2222:22"        # SSH
+  http: "80:80"         # HTTP
+  https: "443:443"      # HTTPS
+  registry: "5000:5000" # Registry
+
+volumes:
+  config: "/mnt/gitlab/config:/etc/gitlab" # Gitlab Config directory
+  logs: "/mnt/gitlab/logs:/var/log/gitlab" # Gitlab Log directory
+  data: "/mnt/gitlab/data:/var/opt/gitlab" # Gitlab Data directory(Nginx, PostgreSQL, Redis ....)

@@ -1,0 +1,11 @@
+---
+- name: Install Docker, Gitlab Packages
+  hosts: all
+  vars_files:
+    - ./variables.yml
+  become: true
+  become_method: sudo
+  become_user: root
+  gather_facts: true
+  roles:
+    - { role: remove, tags: [ 'remove' ] }

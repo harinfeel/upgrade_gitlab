@@ -1,12 +1,9 @@
 ---
-- name: Install docker-compose.yml 
-  template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    mode: "{{ item.mode }}"
-    owner: "ec2-user"
-    group: "ec2-user"
-  with_items:
-    - { src: "docker-compose.yml.j2", dest: "{{ def_dir }}/docker-compose.yml", mode: "0644" }
-
-
+- name: Backup Gitlab data
+  community.docker.docker_container_exec:
+    container: "{{ container_name }}"
+    argv:
+      - /bin/bash
+      - -c
+      - "gitlab-backup create"
+  register: bckGitlab

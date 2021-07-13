@@ -1,0 +1,25 @@
+---
+- name: Install Docker, Gitlab Packages
+  hosts: all
+  vars_files: 
+    - ./variables.yml
+  become: true
+  become_method: sudo
+  become_user: root  
+  gather_facts: true
+  tasks:
+    - name: Get disks
+      set_fact: disk_var="{{ hostvars[inventory_hostname]["ansible_devices"].keys() | list}}"
+
+    - name: Check if the disk is partitioned and also ignore sda
+      stat: 
+        path: "/dev/{{ item }}"
+      with_items: disk_var
+      when: item != 'sda'
+      register: device_stat
+
+    - stat:
+        path: /dev/{{item}}
+      with_items: ansible_devices.keys()
+      when: item != 'sda'
+      register: stats
