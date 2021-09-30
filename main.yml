@@ -10,6 +10,6 @@
   roles:
     - { role: volume, tags: [ 'all', 'volume' ] }
     - { role: docker, tags: [ 'all', 'docker' ] }
-    - { role: gitlab, tags: [ 'all', 'gitlab' ] }
-    - { role: backup, tags: [ 'all', 'backup' ] }
-    - { role: upgrade, tags: [ 'all', 'upgrade' ] }
+    - { role: gitlab-install, tags: [ 'all', 'gitlab' ] }
+#    - { role: backup, tags: [ 'all', 'backup' ] }
+#    - { role: upgrade, tags: [ 'all', 'upgrade' ] }

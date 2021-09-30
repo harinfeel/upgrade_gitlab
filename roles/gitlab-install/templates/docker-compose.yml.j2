@@ -36,6 +36,15 @@ gitlab:
       nginx['proxy_set_headers'] = { "X-Forwarded-Proto" => "https", "X-Forwarded-Ssl" => "on" }
       # Letsencrypt SSL false
       letsencrypt['enable'] = {{ letsencrypt|lower }}
+
+      # Disable the bundled Omnibus provided PostgreSQL
+      postgresql['enable'] = {{ postgresql.enable|lower }}
+
+      # PostgreSQL connection details
+      gitlab_rails['db_adapter'] = {{ postgresql.db_adapter }}
+      gitlab_rails['db_encoding'] = {{ postgresql.db_encoding }}
+      gitlab_rails['db_host'] = {{ postgresql.db_host }}  # IP/hostname of database server
+      gitlab_rails['db_password'] = {{ postgresql.db_password }} # DB Password
   ports:
     - "{{ ports.ssh }}"
     - "{{ ports.http }}"

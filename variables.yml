@@ -9,7 +9,7 @@ provider: "AWS"                 # Storage provider
 region: "ap-northeast-2"        # Region
 use_iam_profile: true           # Using AWS IAM Profile
 
-gitlab_url: "gitlab.mzcloud.xyz"                          # Gitlab URL
+gitlab_url: "git.honeyharin.com"                          # Gitlab URL
 registry_external_url: "http:s//registry.honeyharin.com"  # Gitlab Registry URL
 
 lfs_enabled: true # Enable LFS(Large File System)
@@ -20,22 +20,22 @@ object_store:
   connection:
     proxy_download: true
   bucket:
-    artifact: "gl-mzc-artifacts"
-    external_diffs: "gl-mzc-external-diffs"
-    lfs: "gl-mzc-lfs"
-    uploads: "gl-mzc-uploads"
-    packages: "gl-mzc-packages"
-    dependency_proxy: "gl-mzc-dependency-proxy"
-    terraform_state: "gl-mzc-terraform-state"
+    artifact: "harin-artifacts"
+    external_diffs: "harin-external-diffs"
+    lfs: "harin-lfs"
+    uploads: "harin-uploads"
+    packages: "harin-packages"
+    dependency_proxy: "harin-dependency-proxy"
+    terraform_state: "harin-terraform-state"
 
-backup_upload_remote_directory: "gl-mzc-backups"
+backup_upload_remote_directory: "harin-backups"
 time_zone: "Asia/Seoul"
 
 registry:
   enable: true
   nginx_listen_port: 80
   nginx_listen_https: false
-  bucket: "gl-mzc-registry"
+  bucket: "harin-registry"
 
 nginx:
   client_max_body_size: "1024m"
@@ -43,6 +43,14 @@ nginx:
   gzip_enabled: false
   listen_port: 80
   listen_https: false
+
+postgresql:
+  enable:
+  db_adapter: 'postgresql'
+  db_encoding: 'utf8'
+  db_host: 'bithumb-dev-aurora-postgresql.cluster-cacflcwhfdut.ap-northeast-2.rds.amazonaws.com'
+  db_password: 'gjslgkfls'
+
 
 letsencrypt: false
 
